@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emil Hagbard Lorenzen</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            text-align: center;
+            background-color: #d3d3d3;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-family: 'Cursive', serif;
+            font-size: 3em;
+            margin-top: 20px;
+            color: #660000;
+            text-shadow: 2px 2px 4px #000;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin: 10px;
+            color: #333;
+        }
+        img {
+            width: 400px;
+            height: auto;
+            margin: 20px auto;
+            border: 2px solid black;
+            cursor: pointer;
+            filter: grayscale(100%);
+        }
+        p {
+            font-size: 1.2em;
+            margin: 10px;
+            color: #555;
+            font-style: italic;
+        }
+        canvas {
+            border: 2px solid black;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emil Hagbard Lorenzen</h1>
+    <h2>08.08.98 ~ 24.01.2025</h2>
+    <img src="emil.jpg" alt="Picture of Emil" onclick="startPongGame()">
+    <p>Play mini-game to grieve!</p>
+
+    <canvas id="pongCanvas" width="400" height="300" style="display: none;"></canvas>
+    <p id="score" style="display: none; font-size: 1.2em; color: #333;">Score: 0</p>
+
+    <script>
+        function startPongGame() {
+            const canvas = document.getElementById('pongCanvas');
+            const ctx = canvas.getContext('2d');
+            const scoreElement = document.getElementById('score');
+            canvas.style.display = 'block';
+            scoreElement.style.display = 'block';
+
+            let ballX = canvas.width / 2;
+            let ballY = canvas.height / 2;
+            let ballSpeedX = 0.8;
+            let ballSpeedY = 0.8;
+            let paddleWidth = 100;
+            let paddleHeight = 10;
+            let paddleX = (canvas.width - paddleWidth) / 2;
+            let isGameRunning = true;
+            let score = 0;
+
+            function draw() {
+                if (!isGameRunning) return;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw ball
+                ctx.beginPath();
+                ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+                ctx.fillStyle = '#333';
+                ctx.fill();
+                ctx.closePath();
+
+                // Draw paddle
+                ctx.beginPath();
+                ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+                ctx.fillStyle = '#333';
+                ctx.fill();
+                ctx.closePath();
+
+                // Ball movement
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+
+                // Ball collision with walls
+                if (ballX + 10 > canvas.width || ballX - 10 < 0) ballSpeedX = -ballSpeedX;
+                if (ballY - 10 < 0) ballSpeedY = -ballSpeedY;
+
+                // Ball collision with paddle
+                if (
+                    ballY + 10 > canvas.height - paddleHeight &&
+                    ballX > paddleX &&
+                    ballX < paddleX + paddleWidth
+                ) {
+                    ballSpeedY = -ballSpeedY;
+                    score++;
+                    scoreElement.textContent = `Score: ${score}`;
+                }
+
+                // Ball out of bounds
+                if (ballY + 10 > canvas.height) {
+                    isGameRunning = false;
+                    alert('Game Over! Press OK to return to the page.');
+                    canvas.style.display = 'none';
+                    scoreElement.style.display = 'none';
+                }
+            }
+
+            function keyDownHandler(e) {
+                if (e.key === 'ArrowRight' && paddleX + paddleWidth < canvas.width) {
+                    paddleX += 10;
+                } else if (e.key === 'ArrowLeft' && paddleX > 0) {
+                    paddleX -= 10;
+                }
+            }
+
+            document.addEventListener('keydown', keyDownHandler);
+
+            function gameLoop() {
+                draw();
+                if (isGameRunning) {
+                    requestAnimationFrame(gameLoop);
+                }
+            }
+
+            gameLoop();
+        }
+
+        // Add Doom (Direct Link to Browser-Playable Version)
+        const doomIframe = document.createElement('iframe');
+        doomIframe.src = "https://playclassic.games/games/first-person-shooter-dos-games-online/play-doom-online/play";
+        doomIframe.style.width = "800px";
+        doomIframe.style.height = "600px";
+        doomIframe.style.marginTop = "20px";
+        doomIframe.style.border = "none";
+        doomIframe.style.display = "none";
+        doomIframe.id = "doomGame";
+        document.body.appendChild(doomIframe);
+
+        const doomButton = document.createElement('button');
+        doomButton.textContent = "Play Doom";
+        doomButton.style.marginTop = "20px";
+        doomButton.style.padding = "10px 20px";
+        doomButton.onclick = () => {
+            const doomGame = document.getElementById('doomGame');
+            doomGame.style.display = doomGame.style.display === 'none' ? 'block' : 'none';
+        };
+        document.body.appendChild(doomButton);
+    </script>
+</body>
+</html>
